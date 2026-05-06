@@ -27,7 +27,7 @@ canvas {
 .cntr {
   position: fixed;
   bottom: 10px;
-  left: 55vw;
+  left: 45vw;
   width: 10vw;
   display: flex;
   flex-direction: column;
