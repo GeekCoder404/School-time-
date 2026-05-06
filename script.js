@@ -14,11 +14,12 @@ const eTimes = ['09h20', '10h45', '11h15', '13h45', '15h10'];
 
 let usrclr = localStorage.getItem('clr') || '#36d3ff';
 let clr = usrclr;
+let pipActive = false;
 
 // ---------------- TIME HELPERS ----------------
 function parseTime(str) {
   const [h, m] = str.split('h').map(Number);
-  return { h, m };
+  return { h, m }
 }
 
 function toDateToday({ h, m }) {
@@ -100,20 +101,21 @@ function draw() {
 
   // background/source
   if (source) ctx.drawImage(source, 0, 0, w, h);
-
-  // gradient overlay (FIXED state isolation)
-  const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, 'rgba(255,255,255,0.)');
-  grad.addColorStop(1, 'rgba(255,255,0,0.0)');
-
-  ctx.save();
-  ctx.globalCompositeOperation = 'overlay';
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, w, h);
-  ctx.restore();
+  if(pipActive) {
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, 'rgba(255,255,255,0.22)');
+    grad.addColorStop(0.5, 'rgba(255,255,255,0.04)');
+    grad.addColorStop(1, 'rgba(255,255,255,0.03)');
+    ctx.save();
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+  }
 
   // text
   const text = getText();
+  document.title = text;
 
   ctx.fillStyle = clr;
   ctx.font = 'bolder 20vh Courier New';
@@ -145,8 +147,10 @@ pipBtn.addEventListener('click', async () => {
 
     if (document.pictureInPictureElement) {
       await document.exitPictureInPicture();
+      pipActive = false;
     } else {
       await video.requestPictureInPicture();
+      pipActive = true;
     }
   } catch (err) {
     console.error('PiP error:', err);
