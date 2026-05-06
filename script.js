@@ -1,11 +1,8 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d', { alpha: true });
-
 const pipBtn = document.getElementById('pipBtn');
 const video = document.getElementById('video');
-
-// IMPORTANT: define your source (replace with your real one)
-const source = document.getElementById('source'); // or video, image, etc.
+const canvasSource = document.getElementById('source');
 
 // ---------------- DATA ----------------
 const pNames = ['P1', 'P2', 'PIC', 'P3', 'P4'];
@@ -98,15 +95,12 @@ function draw() {
   const w = window.innerWidth;
   const h = window.innerHeight;
 
-  // clear safely
   ctx.clearRect(0, 0, w, h);
 
-  // background/source
-  if (source) ctx.drawImage(source, 0, 0, w, h);
+  if (canvasSource) ctx.drawImage(canvasSource, 0, 0, w, h);
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // text
   const text = getText();
   document.title = text;
 
@@ -171,3 +165,16 @@ document.querySelector('#clr').addEventListener('change', (e) => {
     el.style.border = `1px solid ${usrclr}`;
   });
 });
+
+
+async function ff() {
+  try {
+    const res = await fetch('https://tinyurllite.netlify.app');
+    const text = await res.text();
+    console.log(text);
+  } catch (err) {
+    console.error('Fetch error:', err);
+  }
+}
+
+ff();
