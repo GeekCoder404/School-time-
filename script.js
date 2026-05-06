@@ -72,6 +72,8 @@ function getText() {
   const h = Math.floor(totalSec / 3600).pad();
   const m = Math.floor((totalSec % 3600) / 60).pad();
   const s = (totalSec % 60).pad();
+  if (h == 0 && m <= 5) clr = '#ffff00';
+  if (h == 0 && m <= 1 && s <= 30) clr = '#ff0000';
 
   return `${pNames[index]} ${h}h ${m}m ${s}s`;
 }
@@ -101,17 +103,8 @@ function draw() {
 
   // background/source
   if (source) ctx.drawImage(source, 0, 0, w, h);
-  if(pipActive) {
-    const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, 'rgba(255,255,255,0.22)');
-    grad.addColorStop(0.5, 'rgba(255,255,255,0.04)');
-    grad.addColorStop(1, 'rgba(255,255,255,0.03)');
-    ctx.save();
-    ctx.globalCompositeOperation = 'overlay';
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, h);
-    ctx.restore();
-  }
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // text
   const text = getText();
