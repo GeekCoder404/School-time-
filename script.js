@@ -173,7 +173,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.clring').forEach(el => {
     el.style.color = usrclr;
-    el.style.border = `1px solid ${usrclr}`;
+    if (el.classList.contains('b')) el.style.border = `1px solid ${usrclr}`;
   });
 });
 
@@ -184,7 +184,7 @@ document.querySelector('#clr').addEventListener('change', (e) => {
 
   document.querySelectorAll('.clring').forEach(el => {
     el.style.color = usrclr;
-    el.style.border = `1px solid ${usrclr}`;
+    if (el.classList.contains('b')) el.style.border = `1px solid ${usrclr}`;
   });
 });
 
