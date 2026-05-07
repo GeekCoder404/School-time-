@@ -67,7 +67,7 @@ function getText() {
   const m = Math.floor((totalSec % 3600) / 60).pad();
   const s = (totalSec % 60).pad();
 
-  const savedClr = localStorage.getItem('clr') || usrclr;
+  const savedClr = localStorage.getItem('clr') || def || usrclr;
 
   clr = savedClr;
 
@@ -116,7 +116,7 @@ function adjust(hex, p) {
 
 // ---------------- TEXT ----------------
 function drawGradientText(ctx, text, x, y, baseColor, w, h) {
-  const safeColor = baseColor || usrclr;
+  const safeColor = baseColor || def || usrclr;
 
   const dark = adjust(safeColor, -70);
   const light = adjust(safeColor, 70);
@@ -212,7 +212,7 @@ pipBtn.addEventListener('click', async () => {
 
 // ---------------- COLOR INPUTS (FIXED) ----------------
 window.addEventListener('DOMContentLoaded', () => {
-  usrclr = localStorage.getItem('clr') || '#36d3ff';
+  usrclr = localStorage.getItem('clr') || def || '#36d3ff';
   bgClr = localStorage.getItem('bgClr') || '#000000';
   clr = usrclr;
 
