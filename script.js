@@ -5,16 +5,16 @@ const video = document.getElementById('video');
 const canvasSource = document.getElementById('source');
 
 // ---------------- DATA ----------------
-// Default background color
+
+let usrclr = localStorage.getItem('clr') || '#36d3ff';
 let bgClr = localStorage.getItem('bgClr') || '#000000';
-let usrclr = localStorage.getItem('clr') || '#ffffff';
 let clr = usrclr;
 let pipActive = false;
 
 // ---------------- TIME HELPERS ----------------
 function parseTime(str) {
   const [h, m] = str.split('h').map(Number);
-  return { h, m }
+  return { h, m };
 }
 
 function toDateToday({ h, m }) {
@@ -67,7 +67,8 @@ function getText() {
   const h = Math.floor(totalSec / 3600).pad();
   const m = Math.floor((totalSec % 3600) / 60).pad();
   const s = (totalSec % 60).pad();
-  if (h == 0 && m < 5) clr = '#ffff00';
+  clr = localStorage.getItem('clr')
+  if (h == 0 && m <= 5) clr = '#ffff00';
   if (h == 0 && m <= 1 && s <= 30) clr = '#ff0000';
 
   return `${pNames[index]} ${h}h ${m}m ${s}s`;
@@ -96,8 +97,9 @@ function draw() {
   ctx.clearRect(0, 0, w, h);
 
   if (canvasSource) ctx.drawImage(canvasSource, 0, 0, w, h);
+
   ctx.fillStyle = bgClr;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, w, h);
 
   const text = getText();
   document.title = text;
@@ -114,15 +116,15 @@ function draw() {
 
 draw();
 
-// ---------------- PIP ----------------
+// ---------------- PIP (CHROME + FIREFOX FIX) ----------------
 let streamReady = false;
 
 pipBtn.addEventListener('click', async () => {
   try {
     if (!streamReady) {
       const stream = canvas.captureStream(30);
-      video.srcObject = stream;
 
+      video.srcObject = stream;
       video.muted = true;
       video.playsInline = true;
 
@@ -130,13 +132,28 @@ pipBtn.addEventListener('click', async () => {
       streamReady = true;
     }
 
-    if (document.pictureInPictureElement) {
-      await document.exitPictureInPicture();
-      pipActive = false;
+    const pipSupported =
+      'pictureInPictureEnabled' in document &&
+      document.pictureInPictureEnabled &&
+      !video.disablePictureInPicture;
+
+    if (pipSupported) {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+        pipActive = false;
+      } else {
+        await video.requestPictureInPicture();
+        pipActive = true;
+      }
     } else {
-      await video.requestPictureInPicture();
-      pipActive = true;
+      // Firefox fallback
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await document.documentElement.requestFullscreen();
+      }
     }
+
   } catch (err) {
     console.error('PiP error:', err);
   }
@@ -145,8 +162,7 @@ pipBtn.addEventListener('click', async () => {
 // ---------------- COLOR ----------------
 window.addEventListener('DOMContentLoaded', () => {
   const clrInput = document.querySelector('#clr');
-  const bgClrInput = document.querySelector('#bgClr');
-
+  const bgClrInput = document.querySelector('#bgClr')
   clrInput.value = usrclr;
   bgClrInput.value = bgClr;
 
@@ -167,12 +183,13 @@ document.querySelector('#clr').addEventListener('change', (e) => {
   });
 });
 
-// Add event listener for background color
+
 document.querySelector('#bgClr').addEventListener('change', (e) => {
   bgClr = e.target.value;
   localStorage.setItem('bgClr', bgClr);
 });
 
+// ---------------- TEST FETCH ----------------
 async function ff() {
   try {
     const res = await fetch('https://tinyurllite.netlify.app');

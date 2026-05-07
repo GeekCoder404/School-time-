@@ -6,7 +6,7 @@
 
 body {
   margin: 0;
-  font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+  font-family: system-ui, 'Courier New', Courier, monospace;
   color: white;
   background-color: black;
   display: flex;
@@ -50,4 +50,17 @@ button {
   height: 2vw;
   background-color: transparent;
   color: white;
+}
+
+.back {
+  padding: 1vh;
+  border: 1px solid white;
+  text-decoration: none;
+  color: white;
+  background-color: #333;
+  border-radius: 1vh;
+  opacity: 0.8;
+  position: fixed;
+  top: 10px;
+  left: 10px;
 }
