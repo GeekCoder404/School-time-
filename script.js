@@ -70,6 +70,8 @@ function getText() {
   const savedClr = localStorage.getItem('clr') || usrclr;
 
   clr = savedClr;
+
+  // ACTIVE COLORS (RESTORED)
   if (h == 0 && m <= 5) clr = '#ffff00';
   if (h == 0 && m <= 1 && s <= 30) clr = '#ff0000';
 
@@ -92,7 +94,7 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// SAFE COLOR HELPERS
+// ---------------- COLOR HELPERS ----------------
 function hexToRgb(hex) {
   if (!hex || typeof hex !== 'string') return [0, 0, 0];
   const n = parseInt(hex.replace("#", ""), 16);
@@ -113,62 +115,53 @@ function adjust(hex, p) {
 }
 
 // ---------------- TEXT ----------------
-function drawGradientText(ctx, text, x, y, baseColor) {
+function drawGradientText(ctx, text, x, y, baseColor, w, h) {
   const safeColor = baseColor || usrclr;
 
   const dark = adjust(safeColor, -70);
   const light = adjust(safeColor, 70);
 
-  const grad = ctx.createLinearGradient(
-    0, ctx.canvas.height,
-    ctx.canvas.width, 0
-  );
-
+  const grad = ctx.createLinearGradient(0, h, w, 0);
   grad.addColorStop(0, dark);
   grad.addColorStop(0.5, safeColor);
   grad.addColorStop(1, light);
 
-  let fontSize = canvas.height * 0.2;
-  ctx.font = `bolder ${fontSize}px "Outfit", Roboto`;
-
-  while (ctx.measureText(text).width > canvas.width && fontSize > 10) {
-    fontSize--;
-    ctx.font = `bolder ${fontSize}px "Outfit", Roboto`;
-  }
+  let fontSize = h * 0.2;
 
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
+  while (fontSize > 10) {
+    ctx.font = `bolder ${fontSize}px Outfit, Roboto`;
+    if (ctx.measureText(text).width <= w) break;
+    fontSize--;
+  }
+
   ctx.fillStyle = grad;
   ctx.shadowColor = safeColor;
   ctx.shadowBlur = 12;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 0;
 
   ctx.fillText(text, x, y);
 }
 
+// ---------------- DRAW ----------------
 function draw() {
   const w = window.innerWidth;
   const h = window.innerHeight;
 
-  ctx.clearRect(0, 0, w, h);
-
-  if (canvasSource) ctx.drawImage(canvasSource, 0, 0, w, h);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = bgClr || "#000";
   ctx.fillRect(0, 0, w, h);
 
+  if (canvasSource) {
+    ctx.drawImage(canvasSource, 0, 0, w, h);
+  }
+
   const text = getText();
   document.title = text;
 
-  drawGradientText(
-    ctx,
-    text,
-    canvas.width / 2,
-    canvas.height / 2,
-    clr
-  );
+  drawGradientText(ctx, text, w / 2, h / 2, clr, w, h);
 
   requestAnimationFrame(draw);
 }
@@ -182,8 +175,8 @@ pipBtn.addEventListener('click', async () => {
   try {
     if (!streamReady) {
       const stream = canvas.captureStream(30);
-
       video.srcObject = stream;
+
       video.muted = true;
       video.playsInline = true;
 
@@ -217,14 +210,11 @@ pipBtn.addEventListener('click', async () => {
   }
 });
 
-// ---------------- COLOR ----------------
+// ---------------- COLOR INPUTS (FIXED) ----------------
 window.addEventListener('DOMContentLoaded', () => {
-  usrclr = localStorage.getItem('clr') || def || '#36d3ff';
+  usrclr = localStorage.getItem('clr') || '#36d3ff';
   bgClr = localStorage.getItem('bgClr') || '#000000';
   clr = usrclr;
-
-  localStorage.setItem('clr', usrclr);
-  localStorage.setItem('bgClr', bgClr);
 
   const clrInput = document.querySelector('#clr');
   const bgClrInput = document.querySelector('#bgClr');
@@ -234,22 +224,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.clring').forEach(el => {
     el.style.color = usrclr;
-    if (el.classList.contains('b')) el.style.border = `1px solid ${usrclr}`;
+    if (el.classList.contains('b')) {
+      el.style.border = `1px solid ${usrclr}`;
+    }
   });
 });
 
-document.querySelector('#clr')?.addEventListener('change', (e) => {
+document.querySelector('#clr')?.addEventListener('input', (e) => {
   usrclr = e.target.value;
   clr = usrclr;
   localStorage.setItem('clr', usrclr);
 
   document.querySelectorAll('.clring').forEach(el => {
     el.style.color = usrclr;
-    if (el.classList.contains('b')) el.style.border = `1px solid ${usrclr}`;
+    if (el.classList.contains('b')) {
+      el.style.border = `1px solid ${usrclr}`;
+    }
   });
 });
 
-document.querySelector('#bgClr')?.addEventListener('change', (e) => {
+document.querySelector('#bgClr')?.addEventListener('input', (e) => {
   bgClr = e.target.value;
   localStorage.setItem('bgClr', bgClr);
 });
