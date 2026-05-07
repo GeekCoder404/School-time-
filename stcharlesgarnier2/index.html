@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Temps Restant</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+      eruda.init();
+    </script>
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="shortcut icon" href="images (1).jpg" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <a class='clring b back' href="../index.html">←</a>  
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+    <div class="cntr">
+      <button class='clring b' id="pipBtn">Style mini</button>
+      <div class="fg"><label class="clring" for="clr">Texte: </label><input class='clring b' type="color" id="clr"></div>
+      <div class="bg"><label class="clring" for="clr">Fond: </label><input class='clring b' type="color" id="bgClr"></div>
+    </div>
+    <video id="video" style="display:none;"></video>
+    <script>
+        const pNames = ['P1', 'P2', 'P3', 'PE', 'P4'];
+        const sTimes = ['08h30', '09h55', '13h42', '14h20'];
+        const eTimes = ['09h42', '11h07', '14h07', '15h32'];
+    </script>
+    <script src="../script.js"></script>
+  </body>
+</html>
