@@ -13,6 +13,8 @@ let usrclr = localStorage.getItem('clr') || '#fc03d3';
 let clr = usrclr;
 let pipActive = false;
 
+const timeModSecs = 36;
+
 // ---------------- TIME HELPERS ----------------
 function parseTime(str) {
   const [h, m] = str.split('h').map(Number);
@@ -32,7 +34,6 @@ Number.prototype.pad = function () {
 // ---------------- CORE LOGIC ----------------
 function getText() {
   const now = new Date();
-  const timeModSecs = 36;
   const nowAdj = new Date(now.getTime() + timeModSecs * 1000);
 
   const starts = sTimes.map(t => toDateToday(parseTime(t)));
