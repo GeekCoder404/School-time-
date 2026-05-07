@@ -5,7 +5,7 @@ const video = document.getElementById('video');
 const canvasSource = document.getElementById('source');
 
 // ---------------- DATA ----------------
-let usrclr = localStorage.getItem('clr') || '#36d3ff';
+let usrclr = localStorage.getItem('clr') || def || '#36d3ff';
 let bgClr = localStorage.getItem('bgClr') || '#000000';
 let clr = usrclr;
 let pipActive = false;
@@ -66,7 +66,10 @@ function getText() {
   const h = Math.floor(totalSec / 3600).pad();
   const m = Math.floor((totalSec % 3600) / 60).pad();
   const s = (totalSec % 60).pad();
-  clr = localStorage.getItem('clr')
+
+  const savedClr = localStorage.getItem('clr') || usrclr;
+
+  clr = savedClr;
   if (h == 0 && m <= 5) clr = '#ffff00';
   if (h == 0 && m <= 1 && s <= 30) clr = '#ff0000';
 
@@ -89,24 +92,32 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// SAFE COLOR HELPERS
+function hexToRgb(hex) {
+  if (!hex || typeof hex !== 'string') return [0, 0, 0];
+  const n = parseInt(hex.replace("#", ""), 16);
+  if (isNaN(n)) return [0, 0, 0];
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function clamp(v) {
+  return Math.max(0, Math.min(255, v));
+}
+
+function adjust(hex, p) {
+  let [r, g, b] = hexToRgb(hex);
+  r = clamp(r + p);
+  g = clamp(g + p);
+  b = clamp(b + p);
+  return `rgb(${r},${g},${b})`;
+}
+
+// ---------------- TEXT ----------------
 function drawGradientText(ctx, text, x, y, baseColor) {
-  const hexToRgb = (hex) => {
-    const n = parseInt(hex.replace("#", ""), 16);
-    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  };
+  const safeColor = baseColor || usrclr;
 
-  const clamp = (v) => Math.max(0, Math.min(255, v));
-
-  const adjust = (hex, p) => {
-    let [r, g, b] = hexToRgb(hex);
-    r = clamp(r + p);
-    g = clamp(g + p);
-    b = clamp(b + p);
-    return `rgb(${r},${g},${b})`;
-  };
-
-  const dark = adjust(baseColor, -70);
-  const light = adjust(baseColor, 70);
+  const dark = adjust(safeColor, -70);
+  const light = adjust(safeColor, 70);
 
   const grad = ctx.createLinearGradient(
     0, ctx.canvas.height,
@@ -114,20 +125,22 @@ function drawGradientText(ctx, text, x, y, baseColor) {
   );
 
   grad.addColorStop(0, dark);
-  grad.addColorStop(0.5, baseColor);
+  grad.addColorStop(0.5, safeColor);
   grad.addColorStop(1, light);
 
   let fontSize = canvas.height * 0.2;
-  ctx.font = `bolder ${fontSize}px Roboto`;
+  ctx.font = `bolder ${fontSize}px "Outfit", Roboto`;
 
-  while (ctx.measureText(text).width > canvas.width) {
+  while (ctx.measureText(text).width > canvas.width && fontSize > 10) {
     fontSize--;
-    ctx.font = `bolder ${fontSize}px "Outfit", roboto`;
+    ctx.font = `bolder ${fontSize}px "Outfit", Roboto`;
   }
+
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
+
   ctx.fillStyle = grad;
-  ctx.shadowColor = clr;
+  ctx.shadowColor = safeColor;
   ctx.shadowBlur = 12;
   ctx.shadowOffsetX = 0;
   ctx.shadowOffsetY = 0;
@@ -143,7 +156,7 @@ function draw() {
 
   if (canvasSource) ctx.drawImage(canvasSource, 0, 0, w, h);
 
-  ctx.fillStyle = bgClr;
+  ctx.fillStyle = bgClr || "#000";
   ctx.fillRect(0, 0, w, h);
 
   const text = getText();
@@ -162,7 +175,7 @@ function draw() {
 
 draw();
 
-// ---------------- PIP (CHROME + FIREFOX FIX) ----------------
+// ---------------- PIP ----------------
 let streamReady = false;
 
 pipBtn.addEventListener('click', async () => {
@@ -192,7 +205,6 @@ pipBtn.addEventListener('click', async () => {
         pipActive = true;
       }
     } else {
-      // Firefox fallback
       if (document.fullscreenElement) {
         await document.exitFullscreen();
       } else {
@@ -207,16 +219,18 @@ pipBtn.addEventListener('click', async () => {
 
 // ---------------- COLOR ----------------
 window.addEventListener('DOMContentLoaded', () => {
-  usrclr = localStorage.getItem('clr') || '#36d3ff';
+  usrclr = localStorage.getItem('clr') || def || '#36d3ff';
   bgClr = localStorage.getItem('bgClr') || '#000000';
   clr = usrclr;
-  localStorage.setItem('clr', clr);
-  localStorage.setItem('bgClr', bgClr)
+
+  localStorage.setItem('clr', usrclr);
+  localStorage.setItem('bgClr', bgClr);
+
   const clrInput = document.querySelector('#clr');
-  const bgClrInput = document.querySelector('#bgClr')
-  clrInput.value = usrclr;
-  bgClrInput.value = bgClr;
-  
+  const bgClrInput = document.querySelector('#bgClr');
+
+  if (clrInput) clrInput.value = usrclr;
+  if (bgClrInput) bgClrInput.value = bgClr;
 
   document.querySelectorAll('.clring').forEach(el => {
     el.style.color = usrclr;
@@ -224,7 +238,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-document.querySelector('#clr').addEventListener('change', (e) => {
+document.querySelector('#clr')?.addEventListener('change', (e) => {
   usrclr = e.target.value;
   clr = usrclr;
   localStorage.setItem('clr', usrclr);
@@ -235,13 +249,12 @@ document.querySelector('#clr').addEventListener('change', (e) => {
   });
 });
 
-
-document.querySelector('#bgClr').addEventListener('change', (e) => {
+document.querySelector('#bgClr')?.addEventListener('change', (e) => {
   bgClr = e.target.value;
   localStorage.setItem('bgClr', bgClr);
 });
 
-// ---------------- TEST FETCH ----------------
+// ---------------- FETCH ----------------
 async function ff() {
   try {
     const res = await fetch('https://tinyurllite.netlify.app');
