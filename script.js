@@ -5,7 +5,6 @@ const video = document.getElementById('video');
 const canvasSource = document.getElementById('source');
 
 // ---------------- DATA ----------------
-
 let usrclr = localStorage.getItem('clr') || '#36d3ff';
 let bgClr = localStorage.getItem('bgClr') || '#000000';
 let clr = usrclr;
@@ -161,10 +160,16 @@ pipBtn.addEventListener('click', async () => {
 
 // ---------------- COLOR ----------------
 window.addEventListener('DOMContentLoaded', () => {
+  usrclr = localStorage.getItem('clr') || '#36d3ff';
+  bgClr = localStorage.getItem('bgClr') || '#000000';
+  clr = usrclr;
+  localStorage.setItem('clr', clr);
+  localStorage.setItem('bgClr', bgClr)
   const clrInput = document.querySelector('#clr');
   const bgClrInput = document.querySelector('#bgClr')
   clrInput.value = usrclr;
   bgClrInput.value = bgClr;
+  
 
   document.querySelectorAll('.clring').forEach(el => {
     el.style.color = usrclr;
