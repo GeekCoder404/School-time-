@@ -35,13 +35,19 @@ canvas {
   gap: 10px;
 }
 
-button {
+.cntr button {
   border: 1px solid white;
   border-radius: 20px;
   width: 5vw;
   height: 2vw;
   background-color: transparent;
   color: white;
+  opacity: 0.9;
+}
+
+.cntr button:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 #clr, #bgClr {
@@ -51,17 +57,37 @@ button {
   height: 2vw;
   background-color: transparent;
   color: white;
+  opacity: 0.9;
+  padding: 0;
+}
+
+input[type='color']:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
 }
 
 .back {
-  padding: 1vh;
-  border: 1px solid white;
+  padding: 0.6vh 1vh 0.6vh 1.4vh;
   text-decoration: none;
   color: white;
-  background-color: #333;
   border-radius: 1vh;
   opacity: 0.8;
   position: fixed;
   top: 10px;
   left: 10px;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.back:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }

@@ -89,6 +89,52 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+function drawGradientText(ctx, text, x, y, baseColor) {
+  const hexToRgb = (hex) => {
+    const n = parseInt(hex.replace("#", ""), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
+
+  const clamp = (v) => Math.max(0, Math.min(255, v));
+
+  const adjust = (hex, p) => {
+    let [r, g, b] = hexToRgb(hex);
+    r = clamp(r + p);
+    g = clamp(g + p);
+    b = clamp(b + p);
+    return `rgb(${r},${g},${b})`;
+  };
+
+  const dark = adjust(baseColor, -70);
+  const light = adjust(baseColor, 70);
+
+  const grad = ctx.createLinearGradient(
+    0, ctx.canvas.height,
+    ctx.canvas.width, 0
+  );
+
+  grad.addColorStop(0, dark);
+  grad.addColorStop(0.5, baseColor);
+  grad.addColorStop(1, light);
+
+  let fontSize = canvas.height * 0.2;
+  ctx.font = `bolder ${fontSize}px Roboto`;
+
+  while (ctx.measureText(text).width > canvas.width) {
+    fontSize--;
+    ctx.font = `bolder ${fontSize}px "Outfit", roboto`;
+  }
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = grad;
+  ctx.shadowColor = clr;
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+
+  ctx.fillText(text, x, y);
+}
+
 function draw() {
   const w = window.innerWidth;
   const h = window.innerHeight;
@@ -103,12 +149,13 @@ function draw() {
   const text = getText();
   document.title = text;
 
-  ctx.fillStyle = clr;
-  ctx.font = 'bolder 20vh Courier New';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  ctx.fillText(text, w / 2, h / 2);
+  drawGradientText(
+    ctx,
+    text,
+    canvas.width / 2,
+    canvas.height / 2,
+    clr
+  );
 
   requestAnimationFrame(draw);
 }
