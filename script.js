@@ -5,11 +5,9 @@ const video = document.getElementById('video');
 const canvasSource = document.getElementById('source');
 
 // ---------------- DATA ----------------
-const pNames = ['P1', 'P2', 'PIC', 'P3', 'P4'];
-const sTimes = ['08h10', '09h35', '10h55', '12h35', '14h00'];
-const eTimes = ['09h20', '10h45', '11h15', '13h45', '15h10'];
-
-let usrclr = localStorage.getItem('clr') || '#36d3ff';
+// Default background color
+let bgClr = localStorage.getItem('bgClr') || '#000000';
+let usrclr = localStorage.getItem('clr') || '#ffffff';
 let clr = usrclr;
 let pipActive = false;
 
@@ -98,7 +96,7 @@ function draw() {
   ctx.clearRect(0, 0, w, h);
 
   if (canvasSource) ctx.drawImage(canvasSource, 0, 0, w, h);
-  ctx.fillStyle = "#000";
+  ctx.fillStyle = bgClr;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const text = getText();
@@ -147,7 +145,10 @@ pipBtn.addEventListener('click', async () => {
 // ---------------- COLOR ----------------
 window.addEventListener('DOMContentLoaded', () => {
   const clrInput = document.querySelector('#clr');
+  const bgClrInput = document.querySelector('#bgClr');
+
   clrInput.value = usrclr;
+  bgClrInput.value = bgClr;
 
   document.querySelectorAll('.clring').forEach(el => {
     el.style.color = usrclr;
@@ -166,6 +167,11 @@ document.querySelector('#clr').addEventListener('change', (e) => {
   });
 });
 
+// Add event listener for background color
+document.querySelector('#bgClr').addEventListener('change', (e) => {
+  bgClr = e.target.value;
+  localStorage.setItem('bgClr', bgClr);
+});
 
 async function ff() {
   try {

@@ -1,23 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <title>Temps Restant</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>
-      eruda.init();
+        eruda.init();
     </script>
-    <link rel="stylesheet" href="\styles.css" />
-    <link rel="shortcut icon" href="images.png" type="image/x-icon">
-  </head>
-  <body>
-    <canvas id="canvas" width="500" height="200"></canvas>
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="shortcut icon" href="images (1).png" type="image/x-icon">
+</head>
+
+<body>
+    <canvas id="canvas" width="1920" height="1080"></canvas>
     <div class="cntr">
-      <button class='clring' id="pipBtn">Style mini</button>
-      <input class='clring' type="color" id="clr">
+        <button class='clring' id="pipBtn">Style mini</button>
+        <input class='clring' type="color" id="clr">
+        <input class='clring' type="color" id="bgClr">
     </div>
     <video id="video" style="display:none;"></video>
-    <script src="/compagnons/script.js"></script>
-  </body>
+    <script>
+        const pNames = ['P1', 'P2', 'P3', 'P4', 'PE'];
+
+        const sTimes = [
+            '09h10',
+            '10h35',
+            '13h05',
+            '14h30',
+            '15h50'
+        ];
+
+        const eTimes = [
+            '10h20',
+            '11h45',
+            '14h15',
+            '15h40',
+            '16h15'
+        ];
+    </script>
+
+    <script src="script.js"></script>
+    <script src="../script.js"></script>
+</body>
+
 </html>
