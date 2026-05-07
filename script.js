@@ -69,7 +69,7 @@ function getText() {
   const h = Math.floor(totalSec / 3600).pad();
   const m = Math.floor((totalSec % 3600) / 60).pad();
   const s = (totalSec % 60).pad();
-  if (h == 0 && m <= 5) clr = '#ffff00';
+  if (h == 0 && m < 5) clr = '#ffff00';
   if (h == 0 && m <= 1 && s <= 30) clr = '#ff0000';
 
   return `${pNames[index]} ${h}h ${m}m ${s}s`;
